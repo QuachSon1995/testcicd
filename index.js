@@ -10,7 +10,7 @@ app.get('/', (req, res) => {
 
 // Một route khác test thêm
 app.get('/test', (req, res) => {
-  res.send('This is a test endpoint!');
+  res.send('This is a test endpoint1!');
 });
 
 // Khởi động server
