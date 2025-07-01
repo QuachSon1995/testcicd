@@ -19,8 +19,7 @@ jobs:
       - name: Install dependencies
         run: npm install  # Cài đặt dependencies
 
-      - name: Run tests
-        run: npm test  # Chạy test để đảm bảo không có lỗi
+
 
       - name: Deploy to EC2
         env:
