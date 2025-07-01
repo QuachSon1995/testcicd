@@ -1,0 +1,38 @@
+on:
+  push:
+    branches:
+      - main  # Chạy workflow khi có code push lên nhánh main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest  # Chạy trên môi trường Ubuntu
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3  # Lấy code từ GitHub repository
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'  # Thiết lập phiên bản Node.js
+
+      - name: Install dependencies
+        run: npm install  # Cài đặt dependencies
+
+      - name: Run tests
+        run: npm test  # Chạy test để đảm bảo không có lỗi
+
+      - name: Deploy to EC2
+        env:
+          PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
+          HOST: ${{ secrets.EC2_HOST }}
+          USER: ${{ secrets.EC2_USER }}
+        run: |
+          echo "$PRIVATE_KEY" > private_key.pem
+          chmod 600 private_key.pem
+          ssh -o StrictHostKeyChecking=no -i private_key.pem $USER@$HOST << 'EOF'
+            cd /home/ubuntu/app  # Đường dẫn ứng dụng trên EC2
+            git pull origin main  # Lấy code mới nhất từ GitHub
+            npm install           # Cài đặt dependencies
+            pm2 restart all        # Restart ứng dụng với PM2
+          EOF
