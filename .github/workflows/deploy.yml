@@ -55,4 +55,6 @@ jobs:
 
       - name: Build with Podman
         run: |
-          podman build -t my-app .
+            git pull origin main  # Lấy code mới nhất từ GitHub
+            npm install           # Cài đặt dependencies
+            pm2 restart all        # Restart ứng dụng với PM2
