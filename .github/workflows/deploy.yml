@@ -1,37 +1,58 @@
+# on:
+#   push:
+#     branches:
+#       - master  # Chạy workflow khi có code push lên nhánh main
+
+# jobs:
+#   deploy:
+#     runs-on: ubuntu-latest  # Chạy trên môi trường Ubuntu
+
+#     steps:
+#       - name: Checkout repository
+#         uses: actions/checkout@v3  # Lấy code từ GitHub repository
+
+#       - name: Set up Node.js
+#         uses: actions/setup-node@v3
+#         with:
+#           node-version: '20'  # Thiết lập phiên bản Node.js
+
+#       - name: Install dependencies
+#         run: npm install  # Cài đặt dependencies
+
+
+
+#       - name: Deploy to EC2
+#         env:
+#           PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
+#           HOST: ${{ secrets.EC2_HOST }}
+#           USER: ${{ secrets.EC2_USER }}
+#         run: |
+#           echo "$PRIVATE_KEY" > private_key.pem
+#           chmod 600 private_key.pem
+#           ssh -o StrictHostKeyChecking=no -i private_key.pem $USER@$HOST << 'EOF'
+#             cd /home/ubuntu/app  # Đường dẫn ứng dụng trên EC2
+#             git pull origin main  # Lấy code mới nhất từ GitHub
+#             npm install           # Cài đặt dependencies
+#             pm2 restart all        # Restart ứng dụng với PM2
+#           EOF
+name: Build Demo
+
 on:
   push:
     branches:
-      - master  # Chạy workflow khi có code push lên nhánh main
+      - master
 
 jobs:
-  deploy:
-    runs-on: ubuntu-latest  # Chạy trên môi trường Ubuntu
+  build:
+    runs-on: self-hosted  # Chạy trên runner local
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3  # Lấy code từ GitHub repository
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '20'  # Thiết lập phiên bản Node.js
+      - name: Hello from local
+        run: echo "🏗️ Building on my local machine!"
 
-      - name: Install dependencies
-        run: npm install  # Cài đặt dependencies
-
-
-
-      - name: Deploy to EC2
-        env:
-          PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
-          HOST: ${{ secrets.EC2_HOST }}
-          USER: ${{ secrets.EC2_USER }}
+      - name: Build with Podman
         run: |
-          echo "$PRIVATE_KEY" > private_key.pem
-          chmod 600 private_key.pem
-          ssh -o StrictHostKeyChecking=no -i private_key.pem $USER@$HOST << 'EOF'
-            cd /home/ubuntu/app  # Đường dẫn ứng dụng trên EC2
-            git pull origin main  # Lấy code mới nhất từ GitHub
-            npm install           # Cài đặt dependencies
-            pm2 restart all        # Restart ứng dụng với PM2
-          EOF
+          podman build -t my-app .
