@@ -13,7 +13,7 @@ app.get('/test', (req, res) => {
   res.send('This is a test endpoint1!');
 });
 
-app.get('/test1', (req, res) => {
+app.get('/test2', (req, res) => {
   res.send('This is a test endpoint1!');
 });
 
