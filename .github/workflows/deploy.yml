@@ -40,11 +40,11 @@ name: Build Demo
 on:
   push:
     branches:
-      - master
+      - master  # Trigger khi push vào nhánh master
 
 jobs:
   build:
-    runs-on: self-hosted  # Chạy trên runner local
+    runs-on: self-hosted  # Sử dụng runner local đã cài
 
     steps:
       - name: Checkout code
@@ -53,8 +53,16 @@ jobs:
       - name: Hello from local
         run: echo "🏗️ Building on my local machine!"
 
-      - name: Build with Podman
+      - name: Pull latest code (optional)
+        run: git pull origin master
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Restart app with PM2
         run: |
-            git pull
-            npm install           # Cài đặt dependencies
-            pm2 restart all        # Restart ứng dụng với PM2
+          if pm2 list | grep -q "index"; then
+            pm2 restart index
+          else
+            pm2 start index.js --name index
+          fi
