@@ -1,68 +1,71 @@
-# on:
-#   push:
-#     branches:
-#       - master  # Chạy workflow khi có code push lên nhánh main
-
-# jobs:
-#   deploy:
-#     runs-on: ubuntu-latest  # Chạy trên môi trường Ubuntu
-
-#     steps:
-#       - name: Checkout repository
-#         uses: actions/checkout@v3  # Lấy code từ GitHub repository
-
-#       - name: Set up Node.js
-#         uses: actions/setup-node@v3
-#         with:
-#           node-version: '20'  # Thiết lập phiên bản Node.js
-
-#       - name: Install dependencies
-#         run: npm install  # Cài đặt dependencies
-
-
-
-#       - name: Deploy to EC2
-#         env:
-#           PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
-#           HOST: ${{ secrets.EC2_HOST }}
-#           USER: ${{ secrets.EC2_USER }}
-#         run: |
-#           echo "$PRIVATE_KEY" > private_key.pem
-#           chmod 600 private_key.pem
-#           ssh -o StrictHostKeyChecking=no -i private_key.pem $USER@$HOST << 'EOF'
-#             cd /home/ubuntu/app  # Đường dẫn ứng dụng trên EC2
-#             git pull origin main  # Lấy code mới nhất từ GitHub
-#             npm install           # Cài đặt dependencies
-#             pm2 restart all        # Restart ứng dụng với PM2
-#           EOF
-name: Build Demo
-
 on:
   push:
     branches:
-      - master  # Trigger khi push vào nhánh master
+      - master  # Chạy workflow khi có code push lên nhánh main
 
 jobs:
-  build:
-    runs-on: self-hosted  # Sử dụng runner local đã cài
+  deploy:
+    runs-on: ubuntu-latest  # Chạy trên môi trường Ubuntu
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v3  # Lấy code từ GitHub repository
 
-      - name: Hello from local
-        run: echo "🏗️ Building on my local machine!"
-
-      - name: Pull latest code (optional)
-        run: git pull origin master
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'  # Thiết lập phiên bản Node.js
 
       - name: Install dependencies
-        run: npm install
+        run: npm install  # Cài đặt dependencies
 
-      - name: Restart app with PM2
+
+
+      - name: Deploy to EC2
+        env:
+          PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
+          HOST: ${{ secrets.EC2_HOST }}
+          USER: ${{ secrets.EC2_USER }}
         run: |
-          if pm2 list | grep -q "index"; then
-            pm2 restart index
-          else
-            pm2 start index.js --name index
-          fi
+          echo "$PRIVATE_KEY" > private_key.pem
+          chmod 600 private_key.pem
+          ssh -o StrictHostKeyChecking=no -i private_key.pem $USER@$HOST << 'EOF'
+            cd /home/ubuntu/app  # Đường dẫn ứng dụng trên EC2
+            git pull origin main  # Lấy code mới nhất từ GitHub
+            npm install           # Cài đặt dependencies
+            pm2 restart all        # Restart ứng dụng với PM2
+          EOF
+
+
+
+# name: Build Demo
+
+# on:
+#   push:
+#     branches:
+#       - master  # Trigger khi push vào nhánh master
+
+# jobs:
+#   build:
+#     runs-on: self-hosted  # Sử dụng runner local đã cài
+
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v3
+
+#       - name: Hello from local
+#         run: echo "🏗️ Building on my local machine!"
+
+#       - name: Pull latest code (optional)
+#         run: git pull origin master
+
+#       - name: Install dependencies
+#         run: npm install
+
+#       - name: Restart app with PM2
+#         run: |
+#           if pm2 list | grep -q "index"; then
+#             pm2 restart index
+#           else
+#             pm2 start index.js --name index
+#           fi
