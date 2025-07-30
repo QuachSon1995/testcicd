@@ -1,7 +1,7 @@
 on:
   push:
     branches:
-      - master  # Chạy workflow khi có code push lên nhánh main
+      - master  # Chạy workflow khi có code push lên nhánh master
 
 jobs:
   deploy:
