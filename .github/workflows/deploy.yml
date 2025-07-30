@@ -33,7 +33,11 @@ jobs:
             cd /home/ubuntu/app/testcicd  # Đường dẫn ứng dụng trên EC2
             git pull origin master  # Lấy code mới nhất từ GitHub
             npm install           # Cài đặt dependencies
-            pm2 restart all        # Restart ứng dụng với PM2
+           if pm2 list | grep -q "index"; then
+             pm2 restart index
+           else
+             pm2 start index.js --name index
+           fi
           EOF
 
 
