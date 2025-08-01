@@ -5,6 +5,7 @@ const port = 3005; // hoặc bạn có thể chọn cổng khác
 
 // Route cơ bản
 app.get('/', (req, res) => {
+    console.log(456)
   res.send('Hello from Node.js API!');
 });
 
