@@ -13,8 +13,8 @@ app.get('/test', (req, res) => {
   res.send('This is a test endpoint1!');
 });
 
-app.get('/test3', (req, res) => {
-  res.send('This is a test endpoint3!');
+app.get('/test5', (req, res) => {
+  res.send('This is a test endpoint5!');
 });
 
 // Khởi động server
